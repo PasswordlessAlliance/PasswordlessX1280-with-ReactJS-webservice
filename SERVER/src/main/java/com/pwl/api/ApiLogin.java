@@ -81,7 +81,6 @@ public class ApiLogin {
 			@RequestParam(value = "id", required = false) String id,
 			@RequestParam(value = "pw", required = false) String pw,
 			HttpServletRequest request) {
-	
 		if(id == null)	id = "";
 		if(pw == null)	pw = "";
 
@@ -292,7 +291,12 @@ public class ApiLogin {
 				
 				HttpSession session = request.getSession(true);
 				session.setAttribute("PasswordlessToken", tmpToken);
+				session.setAttribute("aaa", "AAA");
+				System.out.println("가자");
+				System.out.println(session.getAttribute("PasswordlessToken"));
 				session.setAttribute("PasswordlessTime", tmpTime);
+				
+				System.out.println("SESSION ID = " + session.getId());
 				
 				mapResult.put("PasswordlessToken", tmpToken);
 				mapResult.put("result", "OK");
@@ -329,7 +333,10 @@ public class ApiLogin {
 		
 		HttpSession session = request.getSession();
 		String sessionUserToken = (String) session.getAttribute("PasswordlessToken");
+		String sessionAAA = (String) session.getAttribute("aaa");
 		String sessionTime = (String) session.getAttribute("PasswordlessTime");
+		
+		System.out.println("SESSION ID = " + session.getId());
 		
 		if(sessionUserToken == null)	sessionUserToken = "";
 		if(sessionTime == null)			sessionTime = "";

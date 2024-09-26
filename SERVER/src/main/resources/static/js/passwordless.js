@@ -8,7 +8,7 @@ var pushConnectorToken = "";
 var sessionId = "";
 var loginStatus = false;
 var checkType = "";	// 로그인: "LOGIN", QR등록: "QR"
-
+var servicePassword = "";
 var str_login = "";
 var str_cancel = "";
 var str_title_password = "";
