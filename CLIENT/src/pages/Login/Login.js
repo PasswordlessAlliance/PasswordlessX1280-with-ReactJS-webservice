@@ -510,11 +510,9 @@ const regPasswordlessOK = async () => {
     const response = await common.apiRequest(method, url, data, config);
 	console.log(response);
 
-	let passwordlessToken = "";
 	if(response.result === "OK"){
 		setPasswordlessToken(response.PasswordlessToken);
 		console.log(PasswordlessToken);
-		passwordlessToken = response.PasswordlessToken;
 	}
 	else{
 		alert(response.result);
@@ -522,8 +520,6 @@ const regPasswordlessOK = async () => {
         delete newFormData["pw"];  // 해당 키 삭제
         setFormData(newFormData);
 	}
-
-	console.log("passwordlessToken=" + passwordlessToken);
 	
 	if(response.PasswordlessToken !== "") {
 		var existId = await passwordlessCheckID("");
