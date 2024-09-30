@@ -19,10 +19,10 @@ public class ApiInterceptor implements HandlerInterceptor {
 
 	@Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		 response.addHeader("Access-Control-Allow-Origin", "http://localhost:3000"); // 허용할 도메인
-	        response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"); // 허용할 HTTP 메소드
-	        response.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization"); // 허용할 헤더
-	        response.addHeader("Access-Control-Allow-Credentials", "true"); // 인증 정보 허용 (쿠키 등)
+		response.addHeader("Access-Control-Allow-Origin", "http://localhost:3000"); // 허용할 도메인
+	    response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"); // 허용할 HTTP 메소드
+	    response.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization"); // 허용할 헤더
+	    response.addHeader("Access-Control-Allow-Credentials", "true"); // 인증 정보 허용 (쿠키 등)
     	//log.info("############### ApiInterceptor: preHandle");
     	
     	HttpSession session = request.getSession(false);

@@ -506,15 +506,15 @@ const regPasswordlessOK = async () => {
       pw: formData.pw
     }
     var data = qs.stringify(reqeustData);
-    const config = {
-		withCredentials: true}
+    const config = { withCredentials: true }
     const response = await common.apiRequest(method, url, data, config);
 	console.log(response);
 
+	let passwordlessToken = "";
 	if(response.result === "OK"){
 		setPasswordlessToken(response.PasswordlessToken);
-	
 		console.log(PasswordlessToken);
+		passwordlessToken = response.PasswordlessToken;
 	}
 	else{
 		alert(response.result);
@@ -523,7 +523,7 @@ const regPasswordlessOK = async () => {
         setFormData(newFormData);
 	}
 
-	console.log("PasswordlessToken=" + PasswordlessToken);
+	console.log("passwordlessToken=" + passwordlessToken);
 	
 	if(response.PasswordlessToken !== "") {
 		var existId = await passwordlessCheckID("");
@@ -552,7 +552,8 @@ const getPasswordlessQRinfo = async (PasswordlessToken) => {
 	}
 	var data = qs.stringify(reqeustData);
 	const config = {
-	headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+		withCredentials: true,
+		headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
 	};
 	const response = await common.apiRequest(method, url, data, config);
 	console.log("홍구");

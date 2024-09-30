@@ -296,7 +296,7 @@ public class ApiLogin {
 				System.out.println(session.getAttribute("PasswordlessToken"));
 				session.setAttribute("PasswordlessTime", tmpTime);
 				
-				System.out.println("SESSION ID = " + session.getId());
+				System.out.println("1. SESSION ID = " + session.getId());
 				
 				mapResult.put("PasswordlessToken", tmpToken);
 				mapResult.put("result", "OK");
@@ -336,7 +336,8 @@ public class ApiLogin {
 		String sessionAAA = (String) session.getAttribute("aaa");
 		String sessionTime = (String) session.getAttribute("PasswordlessTime");
 		
-		System.out.println("SESSION ID = " + session.getId());
+		System.out.println("2. SESSION ID = " + session.getId());
+		System.out.println("sessionUserToken = " + sessionUserToken);
 		
 		if(sessionUserToken == null)	sessionUserToken = "";
 		if(sessionTime == null)			sessionTime = "";
