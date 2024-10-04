@@ -674,8 +674,8 @@ const unregPasswordless = async () => {
 		}
 		var data = qs.stringify(reqeustData);
 		const config = {
-		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-		credentials: 'include'
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			withCredentials: true,
 		};
 		const response = await common.apiRequest(method, url, data, config);
 		var strResult = response.result;
