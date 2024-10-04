@@ -47,7 +47,7 @@ input:disabled{ background: #F0F0F0}
 .input_group input{padding: 15px 55px 15px 15px; width: calc(100% - 72px); border: 1px solid #e5e5e5; border-radius: 6px; font-size: 16px;}
 .input_group.focus  input{border: 1px solid #3C9BEE;}
 
-.btn{flex: 1 1 0; font-size: 20px; padding: 20px 0; text-decoration: none; display: inline-flex; background: #3C9BEE; border-radius: 4px; color: #ffffff; align-items: center; justify-content: center; font-weight: 600;}
+.btn{flex: 1 1 0; font-size: 20px; border: none; padding: 20px 0; text-decoration: none; display: inline-flex; background: #3C9BEE; border-radius: 4px; color: #ffffff; align-items: center; justify-content: center; font-weight: 600;}
 .btn:active{ background: #00559e}
 .btn.cancel{ background: #333333}
 

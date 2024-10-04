@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Common } from "../Common";
@@ -12,6 +12,8 @@ function Login(props) {
     const common = Common();
     const { t } = useTranslation(); // 다국어
     const navigate = useNavigate([]);
+	const serverUrlRef = useRef(null);
+	const registerKeyRef = useRef(null);
 
     const [formData, setFormData] = useState({});
     const [selPasswordNo, setSelPasswordNo] = useState(1);  // 1:password, 2:passwordless, 3:passwordless manage
@@ -24,12 +26,10 @@ function Login(props) {
     let sessionId = "";
     let checkType = "";
 	const [PasswordlessToken, setPasswordlessToken] = useState("");
-	const [passwordlessBarStyle, setPasswordlessBarStyle] = useState({});
-	const [passwordlessNumStyle, setPasswordlessNumStyle] = useState({});
 	const [width, setWidth] = useState(0);
 	const [tmpPassword, setTempPassword] = useState("--- ---");
 	const [showHelp, setShowHelp] = useState("none");
-	const [loginTitle, setLoginTitle] = useState("Main.002");
+	const [loginTitle, setLoginTitle] = useState("Main.001");
 	const [loginbutton, setLoginButton] = useState(t("Main.003"));
 	const [tmp_min, setTmp_min] = useState(0);
 	const [tmp_sec, setTmp_sec] = useState(0);
@@ -39,20 +39,10 @@ function Login(props) {
 	let lStatus = false;
 	let servicePassword = "";
 
-    const [strLogin, setStrLogin] = useState("");
-    const [strCancel, setStrCancel] = useState("");
-    const [strTitlePassword, setStrTitlePassword] = useState("");
-    const [strTitlePasswordless, setStrTitlePasswordless] = useState("");
-    const [strPasswordlessRegunreg, setStrPasswordlessRegunreg] = useState("");
-    const [strPasswordlessNotReg, setStrPasswordlessNotReg] = useState("");
-    const [strInputId, setStrInputId] = useState("");
-    const [strInputPassword, setStrInputPassword] = useState("");
-    const [strPasswordlessBlocked, setStrPasswordlessBlocked] = useState("");
-    const [strLoginExpired, setStrLoginExpired] = useState("");
-    const [strLoginRefused, setStrLoginRefused] = useState("");
-    const [strQrRegExpired, setStrQrRegExpired] = useState("");
-    const [strPasswordlessUnreg, setStrPasswordlessUnreg] = useState("");
-    const [strTry, setStrTry] = useState("");
+
+	const [serverUrl, setServerUrl] = useState("");
+	const [registerKey, setRegisterKey] = useState("");
+	const [qrCheck, setQrcheck] = useState(false);
 	
 	let timerCheck = false;
 	let timer;
@@ -62,19 +52,31 @@ function Login(props) {
 	let check_millisec = 0;
 
   const movePage = (url) => {
-      console.log("dfdf");
       navigate(url);
   };
   
   const changeInput = (e) => {
       const { name, value } = e.target;
       setFormData({ ...formData, [name]: value });
-      console.log(formData);
   };
 
   const selPassword = (sel) => {
     // 로그인 방법 선택 시 동작할 코드
     setSelPasswordNo(sel);
+	if(sel === 1){
+		setLoginButton(t("Main.003"));
+		setLoginTitle(t("Main.001"));
+	}
+
+	if(sel === 2){
+		setLoginButton(t("Main.003"));
+		setLoginTitle(t("Main.002"));
+	}
+
+	if(sel === 3){
+		setLoginButton(t("Main.010"));
+		setLoginTitle(t("Main.010"))
+	}
   };
 
   const show_help = () => {
@@ -99,14 +101,11 @@ function Login(props) {
       }
       const method = "post";
       const url = "http://localhost:80/api/Login/loginCheck";
-      console.log(formData);
       const data = qs.stringify(formData);
       const config = {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       };
       const response = await common.apiRequest(method, url, data, config);
-      console.log(response);
-      console.log(response);
       if(response.result !== "OK"){
         const newFormData = { ...formData };  // 기존 객체를 복사하여 새 객체 생성
         delete newFormData["pw"];  // 해당 키 삭제
@@ -114,7 +113,6 @@ function Login(props) {
         alert(response.result);
       }
       else{
-		console.log("로그인")
 		window.localStorage.setItem('loginCheck', "ok");
         movePage("/main");
       }
@@ -123,7 +121,6 @@ function Login(props) {
     else if(selPasswordNo === 2) {
     	if(loginStatus === true){
 			setLoginButton(t("Main.003"));
-			console.log("감사합니다.");
 			cancelLogin();
 		}
 			
@@ -147,8 +144,6 @@ function Login(props) {
 	
 	if(existId === "T") {
 		var token = await getTokenForOneTime();
-		console.log("빵빵아");
-		console.log(token);
 		
 		if(token !== "") {
 			setLoginButton(t("Main.007"));
@@ -169,7 +164,6 @@ const getTokenForOneTime = async () => {
 	let ret_val = "";
 	const method = "post";
 	const url = "http://localhost:80/api/Login/passwordlessCallApi";
-	console.log(formData);
 	const reqeustData = {
 		url: "getTokenForOneTimeUrl",
 		params: "userId=" + formData.id
@@ -197,8 +191,6 @@ const passwordlessCheckID = async (QRReg) => {
 	let ret_val = "";
 	const method = "post";
 	const url = "http://localhost:80/api/Login/passwordlessCallApi";
-	console.log("formData : ");
-	console.log(formData);
 	const reqeustData = {
 		url: "isApUrl",
 		params: "userId=" + formData.id + "&QRReg=" + QRReg
@@ -364,10 +356,6 @@ const drawPasswordlessLogin = async () => {
 	}
 }
 
-useEffect(() => {
-    console.log(showHelp);
-  }, [showHelp]);
-
 const connWebSocket = async () => {
 
 	var qrSocket = new WebSocket(pushConnectorUrl);
@@ -384,6 +372,7 @@ const connWebSocket = async () => {
 		console.log("######## WebSocket Data received [" + qrSocket.readyState + "] ########");
 		
 		try {
+			console.log(checkType);
 			if (event !== null && event !== undefined) {
 				var result = await JSON.parse(event.data);
 				if(result.type === "result") {
@@ -452,8 +441,8 @@ const loginPasswordlessCheck = async () =>{
 				if(auth === "Y") {
 					clearInterval(timer);
 					window.localStorage.removeItem('session_id');
-					
-					//alert("Login OK");
+					window.localStorage.setItem('loginCheck', "ok");
+					alert("Login OK");
 					movePage("/main");
 				}
 				else if(auth === "N") {
@@ -465,7 +454,7 @@ const loginPasswordlessCheck = async () =>{
 }
 
 const regPasswordlessOK = async () => {
-	var existId = passwordlessCheckID("T");
+	var existId = await passwordlessCheckID("T");
 	console.log(existId);
 	if(existId === "T") {
 		console.log(timeoutId);
@@ -508,11 +497,10 @@ const regPasswordlessOK = async () => {
     var data = qs.stringify(reqeustData);
     const config = { withCredentials: true }
     const response = await common.apiRequest(method, url, data, config);
-	console.log(response);
+	
 
 	if(response.result === "OK"){
 		setPasswordlessToken(response.PasswordlessToken);
-		console.log(PasswordlessToken);
 	}
 	else{
 		alert(response.result);
@@ -521,14 +509,13 @@ const regPasswordlessOK = async () => {
         setFormData(newFormData);
 	}
 	
-	if(response.PasswordlessToken !== "") {
+	if(response.PasswordlessToken !== "" && response.PasswordlessToken !== undefined ) {
 		var existId = await passwordlessCheckID("");
-		console.log("existId=" + existId);
-		
 		if(existId === "T") {
 			setIdCheck(true);
 			// $("#login_content").hide();
 			// $("#passwordless_unreg_content").show();
+			console.log(4);
 		}
 		else {
 			getPasswordlessQRinfo(response.PasswordlessToken);
@@ -552,13 +539,10 @@ const getPasswordlessQRinfo = async (PasswordlessToken) => {
 		headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
 	};
 	const response = await common.apiRequest(method, url, data, config);
-	console.log("홍구");
-	console.log(response);
 	var resultData = response.data;
 	var jsonData = JSON.parse(resultData);
 	var msg = jsonData.msg;
 	var code = jsonData.code;
-	console.log(data);
 	console.log("msg [" + msg + "] code [" + code + "]");
 	
 	if(code === "000" || code === "000.0") {
@@ -566,7 +550,6 @@ const getPasswordlessQRinfo = async (PasswordlessToken) => {
 		console.log("------------ info -----------");
 		console.log(data);
 		
-		var data = jsonData.data;
 		var qr = data.qr;
 		var corpId = data.corpId;
 		var registerKey = data.registerKey;
@@ -581,14 +564,14 @@ const getPasswordlessQRinfo = async (PasswordlessToken) => {
 		console.log("serverUrl: " + serverUrl);
 		console.log("userId: " + userId);
 		
-		const pushConnectorUrl = data.pushConnectorUrl;
-		const pushConnectorToken = data.pushConnectorToken;
+		pushConnectorUrl = data.pushConnectorUrl;
+		pushConnectorToken = data.pushConnectorToken;
 		
 		console.log("pushConnectorUrl: " + pushConnectorUrl);
 		console.log("pushConnectorToken: " + pushConnectorToken);
 		
 		// $("#login_content").hide();
-		// $("#passwordless_reg_content").show();
+	
 		
 		var tmpRegisterKey = "";
 		var tmpInterval = 4;
@@ -599,17 +582,20 @@ const getPasswordlessQRinfo = async (PasswordlessToken) => {
 		}
 		registerKey = tmpRegisterKey;
 		
-		// $("#user_id").html(userId);
-		// $("#server_url").html(serverUrl);
-		// $("#register_key").html(registerKey);
+		setServerUrl(serverUrl);
+		setRegisterKey(registerKey);
+		setSelPasswordNo(4);
+		setIdCheck(true);
+		setQrcheck(true);
+		setqrSrc(qr);
 		
 		var today = new Date();
 		passwordless_milisec = today.getTime();
 		passwordless_terms = parseInt(terms - 1);
 		check_millisec = today.getTime();
 		
-		connWebSocket();
 		drawPasswordlessReg();
+		connWebSocket();
 	}
 	else {
 		alert("[" + code + "] " + msg);
@@ -634,9 +620,9 @@ const drawPasswordlessReg = async () => {
 		setTmp_sec(tmp_sec);
 		
 		if(!timerCheck) {
-			timer = setInterval(() => { drawPasswordlessReg(); }, 300); // 1마다 실행
+			timer = setInterval(() => { drawPasswordlessReg(); }, 1000); // 1마다 실행
+			setTimeoutId(timer);
 			timerCheck = true;
-			connWebSocket();
 		}
 		
 		var today = new Date();
@@ -650,21 +636,16 @@ const drawPasswordlessReg = async () => {
 	else {
 		clearTimeout(timeoutId);
 		
-		// $("#rest_time").html("0 : 00");
-		
 		// $("#login_content").show();
 		// $("#passwordless_reg_content").hide();
 		
 		setTimeout(() => alert("Passwordless QR 등록시간이 만료되었습니다."), 100);	// Passwordless QR 등록시간이 만료되었습니다.
-		setTimeout(() => cancelManage(), 200);
+		clearInterval(timer);
+		cancelManage();
 	}
 }
 const unregPasswordless = async () => {
-	console.log(PasswordlessToken);
-	console.log("채")
-	console.log(formData.id);
 	if(window.confirm(t("Main.022"))) {
-		console.log("혜")
 		var id = formData.id;
 		const method = "post";
 		const url = "http://localhost:80/api/Login/passwordlessCallApi";
@@ -679,7 +660,6 @@ const unregPasswordless = async () => {
 		};
 		const response = await common.apiRequest(method, url, data, config);
 		var strResult = response.result;
-		console.log(response);
 		if(strResult === "OK") {
 			var resultData = response.data;
 			var jsonData = JSON.parse(resultData);
@@ -692,7 +672,8 @@ const unregPasswordless = async () => {
 			if(code === "000" || code === "000.0") {
 				window.localStorage.removeItem('passwordless');
 				alert(t("Main.027"));	// Passwordless 서비스가 해지되었습니다.\n\n사용자 Password로 로그인하세요.\n\nPasswordless로 로그인하고 싶다면\nPasswordless 서비스를 먼저 등록하세요.
-				selPassword(1);
+				setSelPasswordNo(1);
+				setIdCheck(false);
 				cancelManage();
 			}
 			else {
@@ -709,19 +690,55 @@ const unregPasswordless = async () => {
 
   const cancelManage = () => {
     // 관리 취소 시 동작할 코드
+	timerCheck = true;
+	clearInterval(timeoutId);
+	setIdCheck(false);
+	selPassword(2);
+	setRegisterKey("");
   };
 
   const copyTxt1 = () => {
-    // 첫 번째 텍스트 복사 시 동작할 코드
-  };
+	if (serverUrlRef.current) {
+		const range = document.createRange();
+		range.selectNodeContents(serverUrlRef.current); // span의 내용을 선택
+  
+		const selection = window.getSelection();
+		selection.removeAllRanges(); // 기존 선택을 제거
+		selection.addRange(range); // span의 내용을 선택 영역으로 설정
+  
+		try {
+		  document.execCommand("copy"); // 선택한 내용을 클립보드로 복사
+		  alert("텍스트가 복사되었습니다!");
+		} catch (err) {
+		  console.error("Failed to copy text: ", err);
+		}
+  
+		selection.removeAllRanges(); // 복사 후 선택을 해제
+	  }
+};
 
   const copyTxt2 = () => {
-    // 두 번째 텍스트 복사 시 동작할 코드
+    if (registerKeyRef.current) {
+		const range = document.createRange();
+		range.selectNodeContents(registerKeyRef.current); // span의 내용을 선택
+  
+		const selection = window.getSelection();
+		selection.removeAllRanges(); // 기존 선택을 제거
+		selection.addRange(range); // span의 내용을 선택 영역으로 설정
+  
+		try {
+		  document.execCommand("copy"); // 선택한 내용을 클립보드로 복사
+		  alert("텍스트가 복사되었습니다!");
+		} catch (err) {
+		  console.error("Failed to copy text: ", err);
+		}
+  
+		selection.removeAllRanges(); // 복사 후 선택을 해제
+	  }
   };
 
   const cancelLogin = async() => {
 	timerCheck = true;
-	console.log(timeoutId);
 	clearInterval(timeoutId);
 
 	setLoginTitle(t("Main.002"));
@@ -826,7 +843,7 @@ const unregPasswordless = async () => {
                 </div>
               </div>
               }
-			  {selPasswordNo !== 3 &&
+			  {selPasswordNo < 3 &&
 				<div id="passwordlessSelButton" style={{ height: 30, marginTop: 10, marginBottom: 10 }}>
 					<div style={{ textAlign: 'center' }}>
 					<span style={{ display: 'inline-block', padding: '6px 10px 16px 10px', textAlign: 'right' }}>
@@ -921,7 +938,7 @@ const unregPasswordless = async () => {
 				}
 				{selPasswordNo === 3 &&
 					<div className="menbership" id="manage_bottom" name="manage_bottom" style={{textAlign: 'center' }}>
-						<a href="./changepw.do">{t("Main.008")}</a>
+						<a href="./changepw">{t("Main.008")}</a>
 						<a href="#" onClick={() => cancelManage()}>
 						<font style={{ fontWeight: 800 }}>{t("Main.003")}</font>
 						</a>
@@ -929,54 +946,56 @@ const unregPasswordless = async () => {
 				}
             </div>
 			}
-            <div id="passwordless_reg_content" style={{ display: 'none' }}>
-              <div style={{ textAlign: 'center' }}>
-                <span style={{ width: '100%', textAlign: 'center', fontWeight: 500, fontSize: 24 }}>
-                  <br />
-                  {t("Main.031")}
-                </span>
-                <br />
-                <img id="qr" name="qr" src={qrSrc} width="300px" height="300px"  style={{ display: 'inline-block', marginTop: 10 }} />
-                <p style={{ width: '100%', padding: '0% 0%', fontWeight: 500, fontSize: 16, lineHeight: 24 }}>{t("Main.031")}</p>
-                <br />
-                <span style={{ display: 'inline-block', width: '100%', fontSize: 18, padding: 10, marginBottom: 20 }}>
-                  <div style={{ gap: 10, display: 'flex', justifyContent: 'center', margin: '8px 0', fontSize: 13 }}>
-                    <div style={{ width: '88%', textAlign: 'left' }}>
-                      <span style={{ width: '30%' }}>[{t("Main.031")}]</span>
-                      <span id="server_url" name="server_url" style={{ fontWeight: 800 }} />
-                    </div>
-                    <div style={{ width: '10%' }}>
-                      <img src={process.env.PUBLIC_URL + "/image/ic-copy.png"} onClick={() => copyTxt1()} />
-                    </div>
-                  </div>
-                  <div style={{ gap: 10, display: 'flex', justifyContent: 'center', margin: '8px 0', fontSize: 13 }}>
-                    <div style={{ width: '88%', textAlign: 'left' }}>
-                      <span style={{ width: '30%' }}>[ {t("Main.031")} ]{t("Main.031")}</span>
-                      <span id="register_key" name="register_key" style={{ fontWeight: 800 }} />
-                    </div>
-                    <div style={{ width: '10%' }}>
-                      <img src={process.env.PUBLIC_URL + "/image/ic-copy.png"} onClick={() => copyTxt2()} />
-                    </div>
-                  </div>
-                  <br />
-                  <b>
-                    <span id="rest_time" style={{ fontSize: 24, textShadow: '1px 1px 2px rgba(0,0,0,0.9)', color: '#afafaf' }}>{tmp_min} : {tmp_sec}</span>
-                  </b>
-                </span>
-              </div>
-              <div className="btn_zone">
-                <a href="#" onClick={() => cancelManage()} className="btn active_btn" id="btn_login">
-                  {t("Main.031")}
-                </a>
-              </div>
-              <div className="btn_zone" id="reg_mobile_check" name="reg_mobile_check" style={{ display: 'none' }}>
-                <a href="#" onClick={() => mobileCheck()} className="btn active_btn">
-                  {t("Main.031")}
-                </a>
-              </div>
-            </div>
+			{registerKey !== "" &&
+				<div id="passwordless_reg_content">
+				<div style={{ textAlign: 'center' }}>
+					<span style={{ width: '100%', textAlign: 'center', fontWeight: 500, fontSize: 24 }}>
+					<br />
+					{t("Main.032")}
+					</span>
+					<br />
+					<img id="qr" name="qr" src={qrSrc} width="300px" height="300px"  style={{ display: 'inline-block', marginTop: 10 }} />
+					<p style={{ width: '100%', padding: '0% 0%', fontWeight: "500px", fontSize: "16px", lineHeight: "24px" }}>{t("Main.033")}</p>
+					<br />
+					<span style={{ display: 'inline-block', width: '100%', fontSize: 18, padding: 10, marginBottom: 20 }}>
+					<div style={{ gap: 10, display: 'flex', justifyContent: 'center', margin: '8px 0', fontSize: 13 }}>
+						<div style={{ width: '88%', textAlign: 'left' }}>
+						<span style={{ width: '30%' }}>[ {t("Main.037")} ]</span>
+						<span ref={serverUrlRef} id="server_url" name="server_url" style={{ fontWeight: 800 }}>{serverUrl}</span>
+						</div>
+						<div style={{ width: '10%' }}>
+						<img src={process.env.PUBLIC_URL + "/image/ic-copy.png"} onClick={() => copyTxt1()} />
+						</div>
+					</div>
+					<div style={{ gap: 10, display: 'flex', justifyContent: 'center', margin: '8px 0', fontSize: 13 }}>
+						<div style={{ width: '88%', textAlign: 'left' }}>
+						<span style={{ width: '30%' }}>[ {t("Main.038")} ]</span>
+						<span ref={registerKeyRef} id="register_key" name="register_key" style={{ fontWeight: 800 }}>{registerKey}</span>
+						</div>
+						<div style={{ width: '10%' }}>
+						<img src={process.env.PUBLIC_URL + "/image/ic-copy.png"} onClick={() => copyTxt2()} />
+						</div>
+					</div>
+					<br />
+					<b>
+						<span id="rest_time" style={{ fontSize: 24, textShadow: '1px 1px 2px rgba(0,0,0,0.9)', color: '#afafaf' }}>{tmp_min} : {tmp_sec}</span>
+					</b>
+					</span>
+				</div>
+				<div className="btn_zone">
+					<a href="#" onClick={() => cancelManage()} className="btn active_btn" id="btn_login">
+					{t("Main.007")}
+					</a>
+				</div>
+				<div className="btn_zone" id="reg_mobile_check" name="reg_mobile_check" style={{ display: 'none' }}>
+					<a href="#" onClick={() => mobileCheck()} className="btn active_btn">
+					{t("Main.007")}
+					</a>
+				</div>
+				</div>
+			}	
             <input type="hidden" id="passwordlessToken" name="passwordlessToken" defaultValue="" />
-			{idCheck === true &&
+			{idCheck === true && qrCheck === false &&
             <div id="passwordless_unreg_content" style={{width: '100%', textAlign: 'center', fontWeight: 500, fontSize: 24, lineHeight: "35px" }}>
               {t("Main.034")}
               <br />

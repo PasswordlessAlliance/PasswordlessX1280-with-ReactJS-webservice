@@ -22,14 +22,12 @@ function Join(props) {
     const changeInput = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
-        console.log(formData);
     };
 
   const join = async () => {
    
     
     var id = formData.id === undefined ? "" : formData.id;
-    console.log(id);
     var pw = formData.pw === undefined ? "" : formData.pw;
     var pw_re = formData.pw_re === undefined ? "" : formData.pw_re;
   //	email = trim(email);

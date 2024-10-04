@@ -37,10 +37,10 @@ function RootRoutes() {
 
     return (
         <Routes>
-            <Route path="/" element={<Info />} />
+            <Route path="/" element={isLogin ? <Main /> : <Info />} />
             <Route path="/login" element={isLogin ? <Main /> : <Login />} />
-            <Route path="/changepw" element={<ChangePW />} />
-            <Route path="/join" element={<Join />} />
+            <Route path="/changepw" element={isLogin ? <ChangePW /> : <Login />} />
+            <Route path="/join" element={isLogin ? <Main /> : <Join />} />
             <Route path="/main" element={isLogin ? <Main /> : <Login />} />
         </Routes>
     );
