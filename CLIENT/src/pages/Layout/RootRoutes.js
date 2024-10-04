@@ -39,7 +39,7 @@ function RootRoutes() {
         <Routes>
             <Route path="/" element={isLogin ? <Main /> : <Info />} />
             <Route path="/login" element={isLogin ? <Main /> : <Login />} />
-            <Route path="/changepw" element={isLogin ? <ChangePW /> : <Login />} />
+            <Route path="/changepw" element={isLogin ? <Main /> : <ChangePW />} />
             <Route path="/join" element={isLogin ? <Main /> : <Join />} />
             <Route path="/main" element={isLogin ? <Main /> : <Login />} />
         </Routes>
