@@ -99,7 +99,7 @@ function Login(props) {
     // 로그인 버튼 클릭 시 동작할 코드
     if(selPasswordNo === 1) {
       if(formData.pw === "" || formData.pw === undefined ) {
-        alert(t("Main.027"));	// PASSWORD를 입력하세요.
+        alert(t("Main.053"));	// PASSWORD를 입력하세요.
         return false;
       }
       const method = "post";
@@ -375,7 +375,6 @@ const connWebSocket = async () => {
 		console.log("######## WebSocket Data received [" + qrSocket.readyState + "] ########");
 		
 		try {
-			console.log(checkType);
 			if (event !== null && event !== undefined) {
 				var result = await JSON.parse(event.data);
 				if(result.type === "result") {
@@ -743,6 +742,7 @@ const unregPasswordless = async () => {
   const cancelLogin = async() => {
 	timerCheck = true;
 	clearInterval(timeoutId);
+	clearInterval(timer);
 
 	setLoginTitle(t("Main.002"));
 	setWidth(0);		
