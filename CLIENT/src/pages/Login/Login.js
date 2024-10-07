@@ -6,17 +6,17 @@ import qs from 'qs';
 
 function Login(props) {
     useEffect(() => {
-
+		selPassword(parseInt(window.localStorage.getItem("selPasswordNo")));
     }, []);
 
     const common = Common();
-    const { t } = useTranslation(); // 다국어
+    const { t} = useTranslation(); // 다국어
     const navigate = useNavigate([]);
 	const serverUrlRef = useRef(null);
 	const registerKeyRef = useRef(null);
 
     const [formData, setFormData] = useState({});
-    const [selPasswordNo, setSelPasswordNo] = useState(1);  // 1:password, 2:passwordless, 3:passwordless manage
+    const [selPasswordNo, setSelPasswordNo] = useState(parseInt(window.localStorage.getItem("selPasswordNo")));  // 1:password, 2:passwordless, 3:passwordless manage
     const [timeoutId, setTimeoutId] = useState(null);
     const [checkMillisec, setCheckMillisec] = useState(0);
     let passwordlessTerms = 0;
@@ -30,7 +30,7 @@ function Login(props) {
 	const [tmpPassword, setTempPassword] = useState("--- ---");
 	const [showHelp, setShowHelp] = useState("none");
 	const [loginTitle, setLoginTitle] = useState("Main.001");
-	const [loginbutton, setLoginButton] = useState(t("Main.003"));
+	const [loginbutton, setLoginButton] = useState("Main.003");
 	const [tmp_min, setTmp_min] = useState(0);
 	const [tmp_sec, setTmp_sec] = useState(0);
 	const [qrSrc, setqrSrc] = useState("");
@@ -63,19 +63,22 @@ function Login(props) {
   const selPassword = (sel) => {
     // 로그인 방법 선택 시 동작할 코드
     setSelPasswordNo(sel);
+	if(sel === 1 || sel === 2 ){
+		window.localStorage.setItem("selPasswordNo",sel);
+	}
 	if(sel === 1){
-		setLoginButton(t("Main.003"));
-		setLoginTitle(t("Main.001"));
+		setLoginButton("Main.003");
+		setLoginTitle("Main.001");
 	}
 
 	if(sel === 2){
-		setLoginButton(t("Main.003"));
-		setLoginTitle(t("Main.002"));
+		setLoginButton("Main.003");
+		setLoginTitle("Main.002");
 	}
 
 	if(sel === 3){
-		setLoginButton(t("Main.010"));
-		setLoginTitle(t("Main.010"))
+		setLoginButton("Main.010");
+		setLoginTitle("Main.010");
 	}
   };
 
@@ -95,8 +98,8 @@ function Login(props) {
   const login = async () => {
     // 로그인 버튼 클릭 시 동작할 코드
     if(selPasswordNo === 1) {
-      if(formData.pw === "") {
-        alert(t("Main.053"));	// PASSWORD를 입력하세요.
+      if(formData.pw === "" || formData.pw === undefined ) {
+        alert(t("Main.027"));	// PASSWORD를 입력하세요.
         return false;
       }
       const method = "post";
@@ -120,7 +123,7 @@ function Login(props) {
     // Passwordless 로그인
     else if(selPasswordNo === 2) {
     	if(loginStatus === true){
-			setLoginButton(t("Main.003"));
+			setLoginButton("Main.003");
 			cancelLogin();
 		}
 			
@@ -146,7 +149,7 @@ function Login(props) {
 		var token = await getTokenForOneTime();
 		
 		if(token !== "") {
-			setLoginButton(t("Main.007"));
+			setLoginButton("Main.007");
 			setloginStatus(true);
 			lStatus = true;
 			loginPasswordlessStart(token);
@@ -744,7 +747,7 @@ const unregPasswordless = async () => {
 	setLoginTitle(t("Main.002"));
 	setWidth(0);		
 	setTempPassword("--- ---");
-	setLoginButton(t("Main.007"));
+	setLoginButton("Main.007");
     
 	var id = formData.id;
 	sessionId = window.localStorage.getItem('session_id');
@@ -764,7 +767,7 @@ const unregPasswordless = async () => {
     var msg = jsonData.msg;
     var code = jsonData.code;
     window.localStorage.removeItem('session_id');
-	setLoginButton(t("Main.003"));
+	setLoginButton("Main.003");
 	setloginStatus(false);
   };   
 
@@ -851,7 +854,7 @@ const unregPasswordless = async () => {
 						htmlFor="selLogin1"
 						style={{ margin: 0, padding: 0, fontFamily: '"Noto Sans KR", sans-serif', fontWeight: 300, fontSize: 'medium' }}
 						>
-						<input type="radio" id="selLogin1" name="selLogin" defaultValue={1} onChange={() => selPassword(1)} defaultChecked />
+						<input type="radio" id="selLogin1" name="selLogin" defaultValue={1} onChange={() => selPassword(1)} checked={selPasswordNo === 1} />
 						Password
 						</label>
 					</span>
@@ -860,7 +863,7 @@ const unregPasswordless = async () => {
 						htmlFor="selLogin2"
 						style={{ margin: 0, padding: 0, fontFamily: '"Noto Sans KR", sans-serif', fontWeight: 300, fontSize: 'medium' }}
 						>
-						<input className="radio_btn" type="radio" id="selLogin2" name="selLogin" defaultValue={2} onChange={() => selPassword(2)} />
+						<input className="radio_btn" type="radio" id="selLogin2" name="selLogin" defaultValue={2} onChange={() => selPassword(2)} checked={selPasswordNo === 2 || selPasswordNo === 3} />
 						Passwordless
 						</label>
 					</span>
@@ -914,7 +917,7 @@ const unregPasswordless = async () => {
 				}
               <div className="btn_zone">
                 <a href="#" onClick={() => login()} className="btn active_btn" id="btn_login">
-                  {loginbutton}
+                  {t(`${loginbutton}`)}
                 </a>
               </div>
               <div className="btn_zone" id="login_mobile_check" name="login_mobile_check" style={{ display: 'none' }}>

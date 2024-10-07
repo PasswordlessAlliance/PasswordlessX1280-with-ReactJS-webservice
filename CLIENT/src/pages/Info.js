@@ -14,7 +14,10 @@ function Info(props) {
     };
 
     useEffect(() => {
-        console.log("hhahhagsdgdsf");
+        const selPasswordNo = window.localStorage.getItem("selPasswordNo");
+        if(selPasswordNo === null){
+            window.localStorage.setItem("selPasswordNo", 1);
+        }
     });
 
     return (
