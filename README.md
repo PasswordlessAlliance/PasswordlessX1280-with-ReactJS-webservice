@@ -53,9 +53,9 @@ Moreover, it enables out-of-band biometric authentication for all B2C online ser
 
 + Create an account on the sample project site
   1. Click <b>create account</b>.
-  2. Enter your ID, password, and name, and then click <b>create</b> button.
+  2. Enter your ID, password, and email, and then click <b>create</b> button.
 
-    ![image](https://github.com/user-attachments/assets/0eeb2a02-4d4e-4bc9-9cab-e8c3351bcd5a)
+    ![image](https://github.com/user-attachments/assets/17d4ea95-a618-48f4-9f42-836168c1ba5f)
 
 + Register for passwordless service
   1. On the login screen of the browser, click <b>passwordless</b>.
