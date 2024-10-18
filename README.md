@@ -19,6 +19,7 @@ Moreover, it enables out-of-band biometric authentication for all B2C online ser
 * eclipse 2022-03 (4.23.0)
 * OpenJDK 11.0.15
 * OpenJDK Runtime Environment 18.9
+* Node JS 18.17.0
 
 ## How to use
 + Project source
@@ -35,9 +36,20 @@ Moreover, it enables out-of-band biometric authentication for all B2C online ser
     6. Apply and click <b>Run</b> button
 
   + Run the local srever and access localhost to your browser.
+    1. Install Node JS
+       
+        [https://nodejs.org/](https://nodejs.org/)
+ 
+        ![image](https://github.com/user-attachments/assets/04c1e15f-385a-4604-981e-2167afa66680)
+
+    2. Run cmd and move to the <b>CLIENT</b> folder within the project folder.
+    3. Type <b>npm install</b> and press enter in the cmd window.
+    4. Type <b>npm start</b> and press enter in the cmd window.
+    5. The browser launches automatically
+
     + Make sure the screen in the screenshot below appears.
 
-    ![image](https://github.com/user-attachments/assets/4769cf6a-86d8-4019-9a4e-11575c11a08c)
+      ![image](https://github.com/user-attachments/assets/4769cf6a-86d8-4019-9a4e-11575c11a08c)
 
 + Create an account on the sample project site
   1. Click <b>create account</b>.
