@@ -6,7 +6,7 @@ import { Common } from "./Common";
 
 function Main(props) {
     const navigate = useNavigate();
-    const { t } = useTranslation(); // 다국어
+    const { t } = useTranslation(); 
     const common = Common();
     const [formData, setFormData] = useState({});
 
@@ -39,7 +39,7 @@ function Main(props) {
 
     const logout = async () =>  {
         const method = "post";
-        const url = "http://localhost:80/api/Login/logout";
+        const url = "http://localhost/api/Login/logout";
         const data = "";
         const config = "";
         const response = await common.apiRequest(method, url, data, config);
@@ -48,10 +48,10 @@ function Main(props) {
       };
     
       const withdraw = async () => {
-        // 회원 탈퇴 로직 구현
+        
         if(window.confirm(t("Main.011") + "\n" + t("Main.012"))) {
             const method = "post";
-            const url = "http://localhost:80/api/Login/withdraw";
+            const url = "http://localhost/api/Login/withdraw";
             const data = "";
             const config = "";
             const response = await common.apiRequest(method, url, data, config);

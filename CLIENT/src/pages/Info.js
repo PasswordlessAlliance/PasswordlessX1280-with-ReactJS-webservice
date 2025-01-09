@@ -6,7 +6,7 @@ import { Common } from "./Common"
 
 function Info(props) {
     const navigate = useNavigate();
-    const { t } = useTranslation(); // 다국어
+    const { t } = useTranslation();
     const common = Common();
 
     const movePage = (url) => {

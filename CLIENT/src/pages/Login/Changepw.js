@@ -8,7 +8,7 @@ import { Common } from "../Common";
 import qs from 'qs';
 function Changepw(props) {
     const common = Common();
-    const { t } = useTranslation(); // 다국어
+    const { t } = useTranslation(); 
     const navigate = useNavigate();
     const userID = sessionStorage.getItem("userID");
     const [formData, setFormData] = useState({});
@@ -31,29 +31,29 @@ function Changepw(props) {
   
   
     if(id === "") {
-      alert(t("Main.013"));	// 아이디를 입력하세요.
+      alert(t("Main.013"));	
       return false;
     }
   
     if(pw === "") {
-        alert(t("Main.014"));	// 비밀번호를 입력하세요.
+        alert(t("Main.014"));	
       return false;
     }
   
     if(pw2 === "") {
-        alert(t("Main.015"));	// 비밀번호 확인을 입력하세요.
+        alert(t("Main.015"));	
       return false;
     }
     
     if(pw !== pw2) {
-        alert(t("Main.016"));	// 비밀번호가 일치하지 않습니다.
-        const newFormData = { ...formData };  // 기존 객체를 복사하여 새 객체 생성
-        delete newFormData["pw_re"];  // 해당 키 삭제
+        alert(t("Main.016"));	
+        const newFormData = { ...formData };  
+        delete newFormData["pw_re"];  
         setFormData(newFormData);
       return false;
     }
     const method = "post";
-    const url = "http://localhost:80/api/Login/changepw";
+    const url = "http://localhost/api/Login/changepw";
     var reqeustData = {
       id: formData.id,
       pw: formData.pw

@@ -7,7 +7,7 @@ import qs from 'qs';
 
 function Join(props) {
     const common = Common();
-    const { t } = useTranslation(); // 다국어
+    const { t } = useTranslation(); 
     const navigate = useNavigate([]);
     const [formData, setFormData] = useState({});
     
@@ -34,32 +34,33 @@ function Join(props) {
   
   
     if(id === "") {
-      alert(t("Main.013"));	// 아이디를 입력하세요.
+      alert(t("Main.013"));	
       return false;
     }
   
     if(pw === "") {
-        alert(t("Main.014"));	// 비밀번호를 입력하세요.
+        alert(t("Main.014"));	
       return false;
     }
   
     if(pw_re === "") {
-        alert(t("Main.015"));	// 비밀번호 확인을 입력하세요.
+        alert(t("Main.015"));	
       return false;
     }
     
     if(pw !== pw_re) {
-        alert(t("Main.016"));	// 비밀번호가 일치하지 않습니다.
-        const newFormData = { ...formData };  // 기존 객체를 복사하여 새 객체 생성
-        delete newFormData["pw_re"];  // 해당 키 삭제
+        alert(t("Main.016"));	
+        const newFormData = { ...formData };  
+        delete newFormData["pw_re"];  
         setFormData(newFormData);
       return false;
     }
     const method = "post";
-    const url = "http://localhost:80/api/Login/join";
+    const url = "http://localhost/api/Login/join";
     var reqeustData = {
       id: formData.id,
-      pw: formData.pw
+      pw: formData.pw,
+      email: formData.email
     }
     var data = qs.stringify(reqeustData);
     const config = "";
@@ -120,6 +121,16 @@ function Join(props) {
                       name="pw_re"
                       placeholder="Confirmation PASSWORD"
                       value={formData.pw_re || ""}
+                      onChange={changeInput}
+                    />
+                  </div>
+                  <div className="input_group">
+                    <input
+                      type="text"
+                      id="eamil"
+                      name="email"
+                      placeholder="Confirmation PASSWORD"
+                      value={formData.email || ""}
                       onChange={changeInput}
                     />
                   </div>
