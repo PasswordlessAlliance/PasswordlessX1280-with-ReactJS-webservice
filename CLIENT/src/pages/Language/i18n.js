@@ -14,8 +14,8 @@ i18n.use(initReactI18next).init({
         en: { translation: en },
         ko: { translation: ko },
     },
-    lng: sessionStorage.getItem("language"), // 세션에 저장된 언어 설정
-    fallbackLng: "en", // 언어를 찾지 못할 때의 대체 언어 설정 (영어)
+    lng: sessionStorage.getItem("language"), // Language setting stored in session"
+    fallbackLng: "en", // Fallback language setting when the language is not found
     interpolation: {
         escapeValue: false,
     },

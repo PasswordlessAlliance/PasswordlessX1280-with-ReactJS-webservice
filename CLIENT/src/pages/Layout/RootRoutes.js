@@ -12,7 +12,7 @@ function RootRoutes() {
 
     useEffect(() => {
         console.log("Page changed:", location.pathname);
-        checkLogin();  // 페이지 이동 시마다 로그인 상태 확인
+        checkLogin();
     }, [location]);
 
     const checkLogin = async () => {
@@ -26,14 +26,8 @@ function RootRoutes() {
     };
 
     useEffect(() => {
-        console.log("RootRoutes mounted");
         checkLogin();
     }, []);
-
-    // 로딩 상태 처리
-    if (isLogin === null) {
-        return <div>Loading...</div>;
-    }
 
     return (
         <Routes>

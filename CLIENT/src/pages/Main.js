@@ -82,11 +82,11 @@ function Main(props) {
                   <strong>{t("Main.041")}</strong>
                   <span>{t("Main.042")}</span>
                   <a href="#" onClick={logout} style={buttonStyle}>
-                    <em className="btn" id="btn_logout">로그아웃</em>
+                    <em className="btn" id="btn_logout">{t("Main.004")}</em>
                   </a>
                   &nbsp;&nbsp;
                   <a href="#" onClick={withdraw} style={buttonStyle}>
-                    <em className="btn" id="btn_delete">탈퇴</em>
+                    <em className="btn" id="btn_delete">{t("Main.006")}</em>
                   </a>
                 </p>
               </li>
